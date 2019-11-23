@@ -2,7 +2,6 @@ import numpy as np
 import os
 from keras.layers import Input, Conv2D, Conv2DTranspose, Cropping2D, Concatenate, Dropout, Activation, BatchNormalization, ZeroPadding2D, MaxPooling2D, AveragePooling2D, GlobalAveragePooling2D
 from keras.models import Model, load_model, model_from_json
-from src import utils
 from keras.applications.densenet import DenseNet121
 
 def convblock1(Input_Net, num_filters, block_index, pad='valid', stride=(2, 2)):
@@ -116,8 +115,11 @@ def save_architecture(net, path):
     with open(file=os.path.join(path, 'DenseVOS_Arch.json'), mode='w') as json_file:
         json_file.write(json_net)
 
-def load_architecture(net, path):
+def load_architecture(path):
+	
 	with open(file=path, mode='r') as json_file:
-		file_content = json_file.read(size=len(json_file))
+		file_content = json_file.read()
 		net = model_from_json(json_string=file_content)
+	
+	return net
 
