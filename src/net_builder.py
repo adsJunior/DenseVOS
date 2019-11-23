@@ -1,7 +1,7 @@
 import numpy as np
 import os
 from keras.layers import Input, Conv2D, Conv2DTranspose, Cropping2D, Concatenate, Dropout, Activation, BatchNormalization, ZeroPadding2D, MaxPooling2D, AveragePooling2D, GlobalAveragePooling2D
-from keras.models import Model, load_model
+from keras.models import Model, load_model, model_from_json
 from src import utils
 from keras.applications.densenet import DenseNet121
 
@@ -97,12 +97,27 @@ def initialize_app(net):
 	
 	return net
 
-def save_net(net, train_set, path, ckpt):
+def save_weights(net, train_set, path, ckpt):
 
-	file_name = 'DenseVOS_{}_ckpt_{}.h5'.format(train_set, ckpt)
+	if (train_set is not None):
+		file_name = 'DenseVOS_{}_ckpt_{}.h5'.format(train_set, ckpt)
+	else:
+		file_name = 'DenseVOS_Parent_ckpt_{}.h5'.format(ckpt)
 	net.save_weights(filepath=os.path.join(path, file_name))
+
+def load_weights(net, path):
+
+	net.load_weights(path)
+
+	return net
 
 def save_architecture(net, path):
     json_net = net.to_json()
     with open(file=os.path.join(path, 'DenseVOS_Arch.json'), mode='w') as json_file:
         json_file.write(json_net)
+
+def load_architecture(net, path):
+	with open(file=path, mode='r') as json_file:
+		file_content = json_file.read(size=len(json_file))
+		net = model_from_json(json_string=file_content)
+
