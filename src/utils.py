@@ -12,7 +12,7 @@ def get_model_optimization():
 def get_model_metrics():
     return ['binary_accuracy']
     
-def class_balanced_cross_entropy_loss(output, label):
+def class_balanced_cross_entropy_loss(label, output):
     """Define the class balanced cross entropy loss to train the network
     Args:
     output: Output of the network
@@ -42,4 +42,3 @@ def class_balanced_cross_entropy_loss(output, label):
 
 def get_model_loss():
     return class_balanced_cross_entropy_loss
-
