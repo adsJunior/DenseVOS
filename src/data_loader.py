@@ -2,6 +2,7 @@ from PIL import Image
 import os
 import numpy as np
 import sys
+from keras.applications.densenet import preprocessing
 # import keras
 # from keras.preprocessing.image import ImageDataGenerator
 
@@ -30,22 +31,55 @@ class Data_Loader:
             self.test_paths = []
 
     def load_train_images(self):
-        images_array = []
-        labels_array = []
+        self.images_train = []
+        self.labels_train = []
+        print("Loading Davis Dataset...")
         #unfinished
         # Try doing data augmentation using ImageDataGenerator
+        for index in enumerate(self.train_paths):
+            image = Image.open(self.train_paths[index][0])
+            image.load()
+            label = Image.open(os.path.join(self.train_paths[index][1]))
+            label.load()
+            label = label.split()[0]
+            if self.data_augmentation:
+                if index == 0:
+                    print('Performing data augmentation...')
+                image_fl = image.transpose(Image.FLIP_LEFT_RIGHT)
+                label_fl = label.transpose(Image.FLIP_LEFT_RIGHT)
+                image_flt = image_fl.transpose(Image.FLIP_TOP_BOTTOM)
+                label_flt = label_fl.transpose(Image.FLIP_TOP_BOTTOM)
+                image_flud = image.transpose(Image.FLIP_TOP_BOTTOM)
+                label_flud = label.transpose(Image.FLIP_TOP_BOTTOM)
+                self.images_train.append(np.array(image_fl, dtype=np.uint8))
+                self.labels_train.append(np.array(label_fl, dtype=np.uint8))
+                self.images_train.append(np.array(image_flt, dtype=np.uint8))
+                self.labels_train.append(np.array(label_flt, dtype=np.uint8))
+                self.images_train.append(np.array(image_flud, dtype=np.uint8))
+                self.labels_train.append(np.array(label_flud, dtype=np.uint8))
+            self.images_train.append(np.array(image, dtype=np.uint8))
+            self.labels_train.append(np.array(label, dtype=np.uint8))
+
+    def load_test_images(self):
+
+        self.images_test = []
+        for line in self.test_paths:
+            image = Image.open(line)
+            image.load()
+            self.images_test.append(image)
+
+        print('Done dataset initialization')
 
 
     #the initializer of the class
-    def __init__(self, train_set, test_set, data_aug=True):
+    def __init__(self, train_set, test_set, data_augmentation=True):
         
-        self.data_aug = data_aug
+        self.data_augmentation = data_augmentation
 
         print('Loading files...')
         # setting train_paths
         self.init_train_paths(train_set)
         self.init_test_paths(test_set)
-
-        if self.data_aug:
-            print('Performing data augmentation...')
-        
+        self.load_train_images()
+        self.load_test_images()
+        # Unfinished Next step, preprocess and return a batch
