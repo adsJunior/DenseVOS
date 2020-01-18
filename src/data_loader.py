@@ -70,7 +70,6 @@ class Data_Loader:
 
         print('Done dataset initialization')
 
-
     #the initializer of the class
     def __init__(self, train_set, test_set, data_augmentation=True):
         
@@ -82,4 +81,16 @@ class Data_Loader:
         self.init_test_paths(test_set)
         self.load_train_images()
         self.load_test_images()
-        # Unfinished Next step, preprocess and return a batch
+        self.train_pointer = 0
+        self.test_pointer = 0
+
+    def next_batch(self, step, batch_size):
+        '''
+        Args:
+        step: string to indicate witch step do ou wanna the batch - if it is the train step, send 'train',
+        if it is the test step, send 'test'.
+        batch_size: number to indicate the size of the batch
+        '''
+        if (step == 'train'):
+            if(self.images_train > self.train_pointer + batch_size):
+                #cansei
