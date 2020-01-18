@@ -30,8 +30,11 @@ def class_balanced_cross_entropy_loss(label, output):
     num_total = num_labels_pos + num_labels_neg
 
     output_gt_zero = tf.cast(tf.greater_equal(output, 0), tf.float32)
-    loss_val = tf.multiply(output, (labels - output_gt_zero)) - tf.log(
+    loss_val = tf.multiply(output, (labels - output_gt_zero)) - tf.math.log(
         1 + tf.exp(output - 2 * tf.multiply(output, output_gt_zero)))
+    # Note: This is for Tensorflow 2.0.0 for previous versions use:
+    # loss_val = tf.multiply(output, (labels - output_gt_zero)) - tf.log(
+    #     1 + tf.exp(output - 2 * tf.multiply(output, output_gt_zero)))
 
     loss_pos = tf.reduce_sum(-tf.multiply(labels, loss_val))
     loss_neg = tf.reduce_sum(-tf.multiply(1.0 - labels, loss_val))
