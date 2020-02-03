@@ -91,6 +91,21 @@ class Data_Loader:
         if it is the test step, send 'test'.
         batch_size: number to indicate the size of the batch
         '''
+        next_batch_images = []
+        next_batch_labels = []
         if (step == 'train'):
-            if(self.images_train > self.train_pointer + batch_size):
-                #cansei
+            dataset_length = len(self.images_train)
+            if(dataset_length > self.train_pointer + batch_size):
+                for i in range(self.train_pointer, self.train_pointer + batch_size):
+                    next_batch_images.append(self.images_train[i])
+                    next_batch_labels.append(self.labels_train[i])
+                self.train_pointer += batch_size
+                return next_batch_images, next_batch_labels
+            else:
+                for i in range(self.train_pointer, self.train_pointer + batch_size):
+                    next_batch_images.append(self.images_train[i % dataset_length])
+                    next_batch_labels.append(self.labels_train[i % dataset_length])
+                self.train_pointer = ((self.train_pointer + batch_size) % dataset_length)
+                return next_batch_images, next_batch_labels
+        elif (step == 'test'):
+            #cansei
